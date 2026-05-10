@@ -10,8 +10,9 @@ class Habitacion extends Model {
         return DB::getResult($stmt);
     }
     public function available(): array {
+        $estado = 'disponible';
         $stmt = DB::prepare('SELECT * FROM habitaciones WHERE estado=? ORDER BY numero ASC');
-        $stmt->bind_param('s', 'disponible');
+        $stmt->bind_param('s', $estado);
         DB::execute($stmt);
         return DB::getResult($stmt);
     }

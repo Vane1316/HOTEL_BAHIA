@@ -10,8 +10,9 @@ class Paquete extends Model {
         return DB::getResult($stmt);
     }
     public function active(): array {
+        $estado = 'activo';
         $stmt = DB::prepare('SELECT * FROM paquetes_habitacion WHERE estado=? ORDER BY nombre');
-        $stmt->bind_param('s', 'activo');
+        $stmt->bind_param('s', $estado);
         DB::execute($stmt);
         return DB::getResult($stmt);
     }

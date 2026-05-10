@@ -1,0 +1,10 @@
+$kind: http-request
+name: http://localhost/HOTEL_BAHIA/public/index.php?route=usuarios/guardar
+url: http://localhost/HOTEL_BAHIA/public/index.php?route=usuarios/guardar
+method: POST
+queryParams:
+  route: usuarios/guardar
+body:
+  type: json
+  content: ""
+order: 4370286630262245

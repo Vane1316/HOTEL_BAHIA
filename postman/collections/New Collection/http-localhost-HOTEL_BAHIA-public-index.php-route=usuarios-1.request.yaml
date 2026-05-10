@@ -1,0 +1,23 @@
+$kind: http-request
+name: http://localhost/HOTEL_BAHIA/public/index.php?route=usuarios
+url: http://localhost/HOTEL_BAHIA/public/index.php?route=usuarios
+method: GET
+queryParams:
+  route: usuarios
+scripts:
+  - type: beforeRequest
+    code: "pm.test(\"Status code is 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response contiene texto esperado\", function () {\r
+
+      \    pm.expect(pm.response.text()).to.include(\"Usuario guardado correctamente\");\r
+
+      });"
+    language: text/javascript
+order: 4269485223768972

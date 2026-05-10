@@ -16,8 +16,9 @@ class Usuario extends Model {
         return DB::getRow($stmt);
     }
     public function active(): array {
+        $estado = 'activo';
         $stmt = DB::prepare('SELECT id, nombre_completo FROM usuarios WHERE estado=? ORDER BY nombre_completo');
-        $stmt->bind_param('s', 'activo');
+        $stmt->bind_param('s', $estado);
         DB::execute($stmt);
         return DB::getResult($stmt);
     }

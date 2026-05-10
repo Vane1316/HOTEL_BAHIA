@@ -1,0 +1,49 @@
+$kind: http-request
+name: http://localhost/HOTEL_BAHIA/public/index.php?route=reservas/guardar
+url: http://localhost/HOTEL_BAHIA/public/index.php?route=reservas/guardar
+method: POST
+queryParams:
+  route: reservas/guardar
+body:
+  type: urlencoded
+  content:
+    usuario_id: "6"
+    habitacion_id: "2"
+    paquete_id: "1"
+    cliente_nombre: María Pérez
+    cliente_documento: "98765432"
+    cliente_telefono: " 3009876543"
+    fecha_entrada: 2026-05-20
+    fecha_salida: 2026-05-22
+    cantidad_personas: "2"
+    tipo_pago: efectivo
+    precio_noche: "180000"
+    precio_paquete: "50000"
+    total_reserva: "410000"
+    estado_reserva: confirmada
+    observaciones: Llegada tarde
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code is 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Reserva guardada correctamente\", function () {\r
+
+      \    pm.expect(pm.response.text()).to.include(\"Reserva guardada correctamente\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"No contiene Error\", function () {\r
+
+      \    pm.expect(pm.response.text()).to.not.include(\"Error\");\r
+
+      });"
+    language: text/javascript
+order: 1778388798564

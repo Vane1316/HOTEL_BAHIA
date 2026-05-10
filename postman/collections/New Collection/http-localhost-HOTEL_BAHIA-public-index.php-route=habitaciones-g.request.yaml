@@ -1,0 +1,40 @@
+$kind: http-request
+name: http://localhost/HOTEL_BAHIA/public/index.php?route=habitaciones/guardar
+url: http://localhost/HOTEL_BAHIA/public/index.php?route=habitaciones/guardar
+method: POST
+queryParams:
+  route: habitaciones/guardar
+body:
+  type: urlencoded
+  content:
+    numero: "202"
+    tipo: Doble
+    capacidad: "3"
+    precio_noche: "180000"
+    estado: disponible
+    descripcion: Habitación amplia con balcón
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code is 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Habitación guardada correctamente\", function () {\r
+
+      \    pm.expect(pm.response.text()).to.include(\"Habitación guardada correctamente\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"No contiene Error\", function () {\r
+
+      \    pm.expect(pm.response.text()).to.not.include(\"Error\");\r
+
+      });"
+    language: text/javascript
+order: 4417345257877581

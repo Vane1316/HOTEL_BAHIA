@@ -1,0 +1,7 @@
+$kind: http-request
+name: http://localhost/HOTEL_BAHIA/public/index.php?route=usuarios
+url: http://localhost/HOTEL_BAHIA/public/index.php?route=usuarios
+method: GET
+queryParams:
+  route: usuarios
+order: 4446407419010951

@@ -1,0 +1,293 @@
+$kind: http-request
+name: http://localhost/HOTEL_BAHIA/public/index.php?route=usuarios
+url: http://localhost/HOTEL_BAHIA/public/index.php?route=usuarios
+method: GET
+queryParams:
+  route: usuarios
+scripts:
+  - type: beforeRequest
+    code: "if (!pm.response) {\r
+
+      \    pm.visualizer.set(`\r
+
+      \        <div style=\"font-family: Arial; padding: 16px;\">\r
+
+      \            <h3>No hay respuesta disponible</h3>\r
+
+      \            <p>Envía la petición primero para visualizar los datos.</p>\r
+
+      \        </div>\r
+
+      \    `, {});\r
+
+      \    return;\r
+
+      }\r
+
+      \r
+
+      let data;\r
+
+      let responseText = '';\r
+
+      \r
+
+      try {\r
+
+      \    responseText = pm.response.text();\r
+
+      } catch (e) {\r
+
+      \    responseText = 'No se pudo leer la respuesta como texto.';\r
+
+      }\r
+
+      \r
+
+      try {\r
+
+      \    data = pm.response.json();\r
+
+      } catch (e) {\r
+
+      \    pm.visualizer.set(`\r
+
+      \        <div style=\"font-family: Arial; padding: 16px;\">\r
+
+      \            <h3>La respuesta no es JSON válido</h3>\r
+
+      \            <pre>{{raw}}</pre>\r
+
+      \        </div>\r
+
+      \    `, {\r
+
+      \        raw: responseText\r
+
+      \    });\r
+
+      \    return;\r
+
+      }\r
+
+      \r
+
+      // Detectar si la respuesta ya es un arreglo\r
+
+      let registros = Array.isArray(data) ? data :\r
+
+      \                Array.isArray(data.data) ? data.data :\r
+
+      \                Array.isArray(data.registros) ? data.registros :\r
+
+      \                Array.isArray(data.results) ? data.results : [];\r
+
+      \r
+
+      // Si no encontró arreglo, intentar convertir objeto único en fila\r
+
+      if (!registros.length && typeof data === 'object' && data !== null && !Array.isArray(data)) {\r
+
+      \    registros = [data];\r
+
+      }\r
+
+      \r
+
+      // Obtener columnas dinámicamente\r
+
+      const columnas = registros.length\r
+
+      \    ? [...new Set(registros.flatMap(obj => Object.keys(obj)))]\r
+
+      \    : [];\r
+
+      \r
+
+      const template = `\r
+
+      <!DOCTYPE html>\r
+
+      <html>\r
+
+      <head>\r
+
+      \    <meta charset=\"UTF-8\">\r
+
+      \    <title>Tabla de registros</title>\r
+
+      \    <style>\r
+
+      \        body {\r
+
+      \            font-family: Arial, sans-serif;\r
+
+      \            padding: 20px;\r
+
+      \            background: #f7f7f7;\r
+
+      \        }\r
+
+      \        h2 {\r
+
+      \            color: #333;\r
+
+      \        }\r
+
+      \        .count {\r
+
+      \            margin-bottom: 12px;\r
+
+      \            color: #666;\r
+
+      \        }\r
+
+      \        table {\r
+
+      \            border-collapse: collapse;\r
+
+      \            width: 100%;\r
+
+      \            background: white;\r
+
+      \            box-shadow: 0 2px 8px rgba(0,0,0,0.08);\r
+
+      \        }\r
+
+      \        th, td {\r
+
+      \            border: 1px solid #ddd;\r
+
+      \            padding: 10px;\r
+
+      \            text-align: left;\r
+
+      \            vertical-align: top;\r
+
+      \        }\r
+
+      \        th {\r
+
+      \            background: #ff6c37;\r
+
+      \            color: white;\r
+
+      \        }\r
+
+      \        tr:nth-child(even) {\r
+
+      \            background: #fafafa;\r
+
+      \        }\r
+
+      \        td {\r
+
+      \            max-width: 300px;\r
+
+      \            word-break: break-word;\r
+
+      \        }\r
+
+      \        .empty {\r
+
+      \            padding: 16px;\r
+
+      \            background: white;\r
+
+      \            border: 1px solid #ddd;\r
+
+      \        }\r
+
+      \    </style>\r
+
+      </head>\r
+
+      <body>\r
+
+      \    <h2>Tabla de registros</h2>\r
+
+      \    <div class=\"count\">Total de registros: {{total}}</div>\r
+
+      \r
+
+      \    {{#if registros.length}}\r
+
+      \    <table>\r
+
+      \        <thead>\r
+
+      \            <tr>\r
+
+      \                {{#each columnas}}\r
+
+      \                    <th>{{this}}</th>\r
+
+      \                {{/each}}\r
+
+      \            </tr>\r
+
+      \        </thead>\r
+
+      \        <tbody>\r
+
+      \            {{#each registros}}\r
+
+      \                <tr>\r
+
+      \                    {{#each ../columnas}}\r
+
+      \                        <td>{{lookup .. this}}</td>\r
+
+      \                    {{/each}}\r
+
+      \                </tr>\r
+
+      \            {{/each}}\r
+
+      \        </tbody>\r
+
+      \    </table>\r
+
+      \    {{else}}\r
+
+      \    <div class=\"empty\">No hay registros para mostrar.</div>\r
+
+      \    {{/if}}\r
+
+      </body>\r
+
+      </html>\r
+
+      `;\r
+
+      \r
+
+      pm.visualizer.set(template, {\r
+
+      \    total: registros.length,\r
+
+      \    columnas,\r
+
+      \    registros: registros.map(item => {\r
+
+      \        const fila = {};\r
+
+      \        columnas.forEach(col => {\r
+
+      \            const valor = item[col];\r
+
+      \            fila[col] = typeof valor === 'object' && valor !== null\r
+
+      \                ? JSON.stringify(valor)\r
+
+      \                : (valor ?? '');\r
+
+      \        });\r
+
+      \        return fila;\r
+
+      \    })\r
+
+      });"
+    language: text/javascript
+order: 3482680284244739

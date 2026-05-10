@@ -35,40 +35,40 @@ class Reserva extends Model {
         return DB::getRow($stmt);
     }
     public function save(array $data): bool {
-        $id = (int)($data['id'] ?? 0);
-        $usuario_id = (int)$data['usuario_id'];
-        $habitacion_id = (int)$data['habitacion_id'];
-        $paquete_id = !empty($data['paquete_id']) ? (int)$data['paquete_id'] : null;
-        $cliente_nombre = $data['cliente_nombre'];
-        $cliente_documento = $data['cliente_documento'];
-        $cliente_telefono = $data['cliente_telefono'];
-        $fecha_entrada = $data['fecha_entrada'];
-        $fecha_salida = $data['fecha_salida'];
-        $cantidad_personas = (int)$data['cantidad_personas'];
-        $tipo_pago = $data['tipo_pago'];
-        $precio_noche = (float)$data['precio_noche'];
-        $precio_paquete = (float)$data['precio_paquete'];
-        $total_reserva = (float)$data['total_reserva'];
-        $estado = $data['estado_reserva'];
-        $observaciones = $data['observaciones'] ?? '';
+        $id = isset($data['id']) ? (int)$data['id'] : 0;
+        $usuario_id = isset($data['usuario_id']) ? (int)$data['usuario_id'] : 0;
+        $habitacion_id = isset($data['habitacion_id']) ? (int)$data['habitacion_id'] : 0;
+        $paquete_id = isset($data['paquete_id']) && $data['paquete_id'] !== '' ? (int)$data['paquete_id'] : null;
+        $cliente_nombre = isset($data['cliente_nombre']) ? $data['cliente_nombre'] : '';
+        $cliente_documento = isset($data['cliente_documento']) ? $data['cliente_documento'] : '';
+        $cliente_telefono = isset($data['cliente_telefono']) ? $data['cliente_telefono'] : '';
+        $fecha_entrada = isset($data['fecha_entrada']) ? $data['fecha_entrada'] : '';
+        $fecha_salida = isset($data['fecha_salida']) ? $data['fecha_salida'] : '';
+        $cantidad_personas = isset($data['cantidad_personas']) ? (int)$data['cantidad_personas'] : 1;
+        $tipo_pago = isset($data['tipo_pago']) ? $data['tipo_pago'] : 'efectivo';
+        $precio_noche = isset($data['precio_noche']) ? (float)$data['precio_noche'] : 0.0;
+        $precio_paquete = isset($data['precio_paquete']) ? (float)$data['precio_paquete'] : 0.0;
+        $total_reserva = isset($data['total_reserva']) ? (float)$data['total_reserva'] : 0.0;
+        $estado = isset($data['estado_reserva']) ? $data['estado_reserva'] : 'pendiente';
+        $observaciones = isset($data['observaciones']) ? $data['observaciones'] : '';
 
         if ($id > 0) {
             if ($paquete_id) {
                 $stmt = DB::prepare('UPDATE reservas SET usuario_id=?, habitacion_id=?, paquete_id=?, cliente_nombre=?, cliente_documento=?, cliente_telefono=?, fecha_entrada=?, fecha_salida=?, cantidad_personas=?, tipo_pago=?, precio_noche=?, precio_paquete=?, total_reserva=?, estado_reserva=?, observaciones=? WHERE id=?');
-                $stmt->bind_param('iiiisssssidssdsi', $usuario_id, $habitacion_id, $paquete_id, $cliente_nombre, $cliente_documento, $cliente_telefono, $fecha_entrada, $fecha_salida, $cantidad_personas, $tipo_pago, $precio_noche, $precio_paquete, $total_reserva, $estado, $observaciones, $id);
+                $stmt->bind_param('iiissssissddssi', $usuario_id, $habitacion_id, $paquete_id, $cliente_nombre, $cliente_documento, $cliente_telefono, $fecha_entrada, $fecha_salida, $cantidad_personas, $tipo_pago, $precio_noche, $precio_paquete, $total_reserva, $estado, $observaciones, $id);
             } else {
                 $stmt = DB::prepare('UPDATE reservas SET usuario_id=?, habitacion_id=?, paquete_id=NULL, cliente_nombre=?, cliente_documento=?, cliente_telefono=?, fecha_entrada=?, fecha_salida=?, cantidad_personas=?, tipo_pago=?, precio_noche=?, precio_paquete=?, total_reserva=?, estado_reserva=?, observaciones=? WHERE id=?');
-                $stmt->bind_param('iisssssidssdsi', $usuario_id, $habitacion_id, $cliente_nombre, $cliente_documento, $cliente_telefono, $fecha_entrada, $fecha_salida, $cantidad_personas, $tipo_pago, $precio_noche, $precio_paquete, $total_reserva, $estado, $observaciones, $id);
+                $stmt->bind_param('iissssissddssi', $usuario_id, $habitacion_id, $cliente_nombre, $cliente_documento, $cliente_telefono, $fecha_entrada, $fecha_salida, $cantidad_personas, $tipo_pago, $precio_noche, $precio_paquete, $total_reserva, $estado, $observaciones, $id);
             }
             return DB::execute($stmt);
         }
 
         if ($paquete_id) {
             $stmt = DB::prepare('INSERT INTO reservas(usuario_id, habitacion_id, paquete_id, cliente_nombre, cliente_documento, cliente_telefono, fecha_reserva, fecha_entrada, fecha_salida, cantidad_personas, tipo_pago, precio_noche, precio_paquete, total_reserva, estado_reserva, observaciones) VALUES(?, ?, ?, ?, ?, ?, CURDATE(), ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-            $stmt->bind_param('iiiisssssidsss', $usuario_id, $habitacion_id, $paquete_id, $cliente_nombre, $cliente_documento, $cliente_telefono, $fecha_entrada, $fecha_salida, $cantidad_personas, $tipo_pago, $precio_noche, $precio_paquete, $total_reserva, $estado, $observaciones);
+            $stmt->bind_param('iiisssssissddss', $usuario_id, $habitacion_id, $paquete_id, $cliente_nombre, $cliente_documento, $cliente_telefono, $fecha_entrada, $fecha_salida, $cantidad_personas, $tipo_pago, $precio_noche, $precio_paquete, $total_reserva, $estado, $observaciones);
         } else {
             $stmt = DB::prepare('INSERT INTO reservas(usuario_id, habitacion_id, cliente_nombre, cliente_documento, cliente_telefono, fecha_reserva, fecha_entrada, fecha_salida, cantidad_personas, tipo_pago, precio_noche, precio_paquete, total_reserva, estado_reserva, observaciones) VALUES(?, ?, ?, ?, ?, CURDATE(), ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-            $stmt->bind_param('iisssssidsss', $usuario_id, $habitacion_id, $cliente_nombre, $cliente_documento, $cliente_telefono, $fecha_entrada, $fecha_salida, $cantidad_personas, $tipo_pago, $precio_noche, $precio_paquete, $total_reserva, $estado, $observaciones);
+            $stmt->bind_param('iissssissddss', $usuario_id, $habitacion_id, $cliente_nombre, $cliente_documento, $cliente_telefono, $fecha_entrada, $fecha_salida, $cantidad_personas, $tipo_pago, $precio_noche, $precio_paquete, $total_reserva, $estado, $observaciones);
         }
         $ok = DB::execute($stmt);
         if ($ok && in_array($estado, ['pendiente', 'confirmada'], true)) {
