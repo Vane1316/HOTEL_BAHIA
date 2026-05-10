@@ -27,3 +27,4 @@ Nombre: `hotel_bahia_azul_mvc`
 
 ## Nota
 Esta versión entra directo al sistema, sin login, para facilitar pruebas y exposición.
+# HOTEL_BAHIA
